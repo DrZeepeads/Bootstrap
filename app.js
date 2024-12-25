@@ -1,5 +1,5 @@
 // Hugging Face API setup
-const apiUrl = "https://api-inference.huggingface.co/models/zephyr";
+const apiUrl = "https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-alpha";
 const apiKey = "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";
 
 // DOM elements
@@ -52,10 +52,13 @@ async function sendMessage() {
             saveToHistory("NelsonBot", botResponse);
         } else {
             // Log API error details
-            const errorDetails = await response.json();
-            console.error("API Error:", errorDetails);
-
-            addMessage("NelsonBot", `Error: Unable to retrieve information. (${response.status})`);
+            const errorDetails = await response.json().catch(() => ({})); // Handle cases where error details are not in JSON format
+            const errorMessage = errorDetails.error || "An unknown error occurred.";
+            console.error("API Error:", response.status, errorMessage);
+            addMessage(
+                "NelsonBot",
+                `Error: Unable to retrieve information. (${response.status}) - ${errorMessage}`
+            );
         }
     } catch (error) {
         console.error("Fetch Error:", error);
