@@ -7,17 +7,21 @@ const Chat = () => {
 
   const sendMessage = async () => {
     if (!input) return;
+
     const newMessages = [...messages, { sender: "user", text: input }];
     setMessages(newMessages);
 
-    const response = await fetch("/api/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ inputs: input }),
-    });
-
-    const data = await response.json();
-    setMessages([...newMessages, { sender: "bot", text: data.generated_text }]);
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ inputs: input }),
+      });
+      const data = await response.json();
+      setMessages([...newMessages, { sender: "bot", text: data.generated_text }]);
+    } catch (error) {
+      setMessages([...newMessages, { sender: "bot", text: "Error fetching response." }]);
+    }
     setInput("");
   };
 
