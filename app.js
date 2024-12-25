@@ -42,15 +42,24 @@ async function sendMessage() {
 
         if (response.ok) {
             const data = await response.json();
-            const botResponse = data.generated_text || "I couldn't understand that. Can you rephrase?";
+
+            // Log response for debugging
+            console.log("API Response:", data);
+
+            // Check if response contains generated text
+            const botResponse = data.generated_text || "I couldn't find the information. Can you rephrase?";
             addMessage("NelsonBot", botResponse);
             saveToHistory("NelsonBot", botResponse);
         } else {
-            addMessage("NelsonBot", "Error: Unable to retrieve information.");
+            // Log API error details
+            const errorDetails = await response.json();
+            console.error("API Error:", errorDetails);
+
+            addMessage("NelsonBot", `Error: Unable to retrieve information. (${response.status})`);
         }
     } catch (error) {
-        console.error("Error:", error);
-        addMessage("NelsonBot", "An error occurred. Please try again later.");
+        console.error("Fetch Error:", error);
+        addMessage("NelsonBot", "An error occurred. Please check your internet connection or try again later.");
     } finally {
         typingIndicator.classList.add('d-none');
     }
